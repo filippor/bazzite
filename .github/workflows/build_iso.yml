@@ -15,7 +15,7 @@ jobs:
   build-iso:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
     strategy:
@@ -157,13 +157,14 @@ jobs:
         with:
           name: Release ${{ github.run_number }}
           tag_name: v${{ github.run_number }}
+          files: |
+            ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
+            ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Artifact to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files:  ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM
+
 
       # - name: Upload ISOs and Checksum to R2
       #   if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
