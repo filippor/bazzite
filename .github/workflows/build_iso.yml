@@ -15,7 +15,7 @@ jobs:
   build-iso:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
       id-token: write
     strategy:
@@ -156,6 +156,10 @@ jobs:
     name: Create GitHub Release
     needs: build-iso
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
