@@ -129,42 +129,47 @@ jobs:
           additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl'
           repos: '/github/workspace/bazzite.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
 
-      # - name: Move ISOs to Upload Directory
-      #   id: upload-directory
-      #   shell: bash
-      #   run: |
-      #     ISO_UPLOAD_DIR=${{ github.workspace }}/upload
-      #     mkdir ${ISO_UPLOAD_DIR}
-      #     mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
-      #     mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
-      #     echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
+      - name: Move ISOs to Upload Directory
+        id: upload-directory
+        shell: bash
+        run: |
+           ISO_UPLOAD_DIR=${{ github.workspace }}/upload
+           mkdir ${ISO_UPLOAD_DIR}
+           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
+           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
+           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
-      # - name: Upload ISOs and Checksum to Job Artifacts
-      #   #if: github.ref_name == 'testing'
-      #   #if: github.event_name == 'pull_request'
-      #   uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      #   with:
-      #     name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
-      #     path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
-      #     if-no-files-found: error
-      #     retention-days: 0
-      #     compression-level: 0
-      #     overwrite: true
+      - name: Upload ISOs and Checksum to Job Artifacts
+         #if: github.ref_name == 'testing'
+         #if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
+           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
+           if-no-files-found: error
+           retention-days: 0
+           compression-level: 0
+           overwrite: true
       
       
+  release:
+    name: Create GitHub Release
+    needs: build-iso
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: List downloaded artifacts
+        run: ls -R artifacts/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.run_number }}
-          tag_name: v${{ github.run_number }}
+          files: artifacts/**/*  # Upload all files in all artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Artifact to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files:  ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM
-
       # - name: Upload ISOs and Checksum to R2
       #   if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
       #   shell: bash
