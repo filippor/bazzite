@@ -129,15 +129,15 @@ jobs:
           additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl'
           repos: '/github/workspace/bazzite.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
 
-      - name: Move ISOs to Upload Directory
-        id: upload-directory
-        shell: bash
-        run: |
-           ISO_UPLOAD_DIR=${{ github.workspace }}/upload
-           mkdir ${ISO_UPLOAD_DIR}
-           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
-           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
-           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
+      # - name: Move ISOs to Upload Directory
+      #   id: upload-directory
+      #   shell: bash
+      #   run: |
+      #      ISO_UPLOAD_DIR=${{ github.workspace }}/upload
+      #      mkdir ${ISO_UPLOAD_DIR}
+      #      mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
+      #      mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
+      #      echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       # - name: Upload ISOs and Checksum to Job Artifacts
       #   #if: github.ref_name == 'testing'
@@ -150,19 +150,13 @@ jobs:
       #     retention-days: 0
       #     compression-level: 0
       #     overwrite: true
-      - name: Upload to Mega
-        uses: Mamami-Digital/action-megacmd@master
-        id: upload
+      - name: Upload to Dropbox
+        uses: intersecato/dropbox-upload@v1.0.0
         with:
-          args: put ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
-        env:
-          USERNAME: ${{ secrets.MEGA_USERNAME }}
-          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      - name: Output Url
-        shell: bash
-        run: |
-          echo ${{ steps.upload.outputs }}
-
+          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
+          DROPBOX_DESTINATION_PATH_PREFIX: "bazzite"
+          GLOB: "${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}"
+     
 
 
       # - name: Upload ISOs and Checksum to R2
