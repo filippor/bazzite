@@ -31,9 +31,20 @@ jobs:
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          docker-images: false
 
       - name: Checkout Repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Test Upload to Mega
+        uses: Difegue/action-megacmd@master
+        with:
+          args: put README.md /bazzite/
+        env:
+          USERNAME: ${{ secrets.MEGA_USERNAME }}
+          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+
 
       - name: Set Image Tag
         id: generate-tag
@@ -158,10 +169,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.MEGA_USERNAME }}
           PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      - name: Output Url
-        shell: bash
-        run: |
-          echo ${{ steps.upload.outputs }}
+
 
 
 
