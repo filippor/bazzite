@@ -150,19 +150,18 @@ jobs:
       #     retention-days: 0
       #     compression-level: 0
       #     overwrite: true
-      
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload to Mega
+        uses: Siege-Wizard/mega-upload@1.0.1
+        id: upload
         with:
-          name: Release ${{ github.run_number }}
-          tag_name: v${{ github.run_number }}
-          files: |
-            ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
-            ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM
-
+          file:  ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ secrets.MEGA_USERNAME }}
+          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+      - name: Output Url
+        shell: bash
+        run: |
+          echo ${{ steps.upload.outputs.url }}
 
 
 
