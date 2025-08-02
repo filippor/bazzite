@@ -151,7 +151,7 @@ jobs:
       #     compression-level: 0
       #     overwrite: true
       - name: Upload to Mega
-        uses: Siege-Wizard/mega-upload@1.0.1
+        uses: Siege-Wizard/mega-upload@1
         id: upload
         with:
           file:  ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
