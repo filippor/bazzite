@@ -151,11 +151,14 @@ jobs:
       #     compression-level: 0
       #     overwrite: true
       - name: Upload to Dropbox
-        uses: intersecato/dropbox-upload@master
+        uses: Lewuathe/dropbox-github-action@v1.0.3
         with:
-          DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
-          DROPBOX_DESTINATION_PATH_PREFIX: "bazzite"
-          GLOB: "${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}"
+          dropbox-app-key: ${{ secrets.DROPBOX_APP_KEY }}
+          dropbox-app-secret: ${{ secrets.DROPBOX_APP_SECRET }}
+          dropbox-refresh-token: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+          source-path: ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
+          target-path: bazzite//${{ steps.build.outputs.iso_name }}
+          write-mode:  overwrite
      
 
 
