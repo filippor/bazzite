@@ -151,7 +151,7 @@ jobs:
       #     compression-level: 0
       #     overwrite: true
       - name: Upload to Mega
-        uses: martinschneider/action-megacmd@master
+        uses: Mamami-Digital/action-megacmd@master
         id: upload
         with:
           args: put ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
