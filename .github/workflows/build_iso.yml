@@ -151,7 +151,7 @@ jobs:
       #     compression-level: 0
       #     overwrite: true
       - name: Upload to Mega
-        uses: Difegue/action-megacmd@1.3.4
+        uses: Difegue/action-megacmd@1.3.0
         id: upload
         with:
           args: put ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
