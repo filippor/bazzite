@@ -35,6 +35,15 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
+      - name: Test Upload to Mega
+        uses: martinschneider/action-megacmd@master
+        with:
+          args: put README.md /bazzite/
+        env:
+          USERNAME: ${{ secrets.MEGA_USERNAME }}
+          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+
+
       - name: Set Image Tag
         id: generate-tag
         shell: bash
@@ -154,14 +163,11 @@ jobs:
         uses: martinschneider/action-megacmd@master
         id: upload
         with:
-          args: put : ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
+          args: put ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
         env:
           USERNAME: ${{ secrets.MEGA_USERNAME }}
           PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      - name: Output Url
-        shell: bash
-        run: |
-          echo ${{ steps.upload.outputs }}
+
 
 
 
