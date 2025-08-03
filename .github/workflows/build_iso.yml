@@ -151,10 +151,10 @@ jobs:
       #     compression-level: 0
       #     overwrite: true
       - name: Upload to Mega
-        uses: Siege-Wizard/mega-upload@master
+        uses: martinschneider/action-megacmd@master
         id: upload
         with:
-          file: ${{ steps.upload-directory.outputs.iso-upload-dir }}
+          args: put : ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
         env:
           USERNAME: ${{ secrets.MEGA_USERNAME }}
           PASSWORD: ${{ secrets.MEGA_PASSWORD }}
