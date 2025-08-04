@@ -93,7 +93,8 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
         rok/cdemu \
-        lizardbyte/stable; \
+        lizardbyte/stable \
+        filippor/bazzite; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -407,6 +408,16 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
     chmod +x /usr/bin/ujust-picker && \
+    /ctx/cleanup
+
+# Install and enable oberon governor
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
+    dnf5 -y install oberon governor && \
+    systemctl enable  oberon-governor.service && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
