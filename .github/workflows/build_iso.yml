@@ -15,7 +15,7 @@ jobs:
   build-iso:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
       id-token: write
     strategy:
@@ -31,20 +31,9 @@ jobs:
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          docker-images: false
 
       - name: Checkout Repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-
-      - name: Test Upload to Mega
-        uses: Difegue/action-megacmd@master
-        with:
-          args: put README.md /bazzite/
-        env:
-          USERNAME: ${{ secrets.MEGA_USERNAME }}
-          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set Image Tag
         id: generate-tag
@@ -144,34 +133,23 @@ jobs:
         id: upload-directory
         shell: bash
         run: |
-           ISO_UPLOAD_DIR=${{ github.workspace }}/upload
-           mkdir ${ISO_UPLOAD_DIR}
-           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
-           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
-           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
+          ISO_UPLOAD_DIR=${{ github.workspace }}/upload
+          mkdir ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
+          echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
-      # - name: Upload ISOs and Checksum to Job Artifacts
-      #   #if: github.ref_name == 'testing'
-      #   #if: github.event_name == 'pull_request'
-      #   uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      #   with:
-      #     name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
-      #     path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
-      #     if-no-files-found: error
-      #     retention-days: 0
-      #     compression-level: 0
-      #     overwrite: true
-      - name: Upload to Mega
-        uses: Difegue/action-megacmd@master
-        id: upload
+      - name: Upload ISOs and Checksum to Job Artifacts
+        #if: github.ref_name == 'testing'
+        #if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          args: put ${{ steps.upload-directory.outputs.iso-upload-dir }} /bazzite/
-        env:
-          USERNAME: ${{ secrets.MEGA_USERNAME }}
-          PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-
-
-
+          name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
+          path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0
+          overwrite: true
 
       # - name: Upload ISOs and Checksum to R2
       #   if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
