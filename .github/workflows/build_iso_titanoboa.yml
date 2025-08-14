@@ -24,14 +24,10 @@ jobs:
       matrix:
         image_name:
           - bazzite
-          - bazzite-nvidia
           - bazzite-nvidia-open
           - bazzite-gnome
-          - bazzite-gnome-nvidia
-          - bazzite-gnome-nvidia-open
           - bazzite-deck
           - bazzite-deck-gnome
-          - bazzite-deck-nvidia
           # - bazzite-deck-nvidia-gnome
     steps:
       - name: Free Disk Space (Ubuntu)
