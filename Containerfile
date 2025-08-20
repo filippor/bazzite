@@ -230,6 +230,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
+        toolbox \
         htop && \
     /ctx/cleanup
 
